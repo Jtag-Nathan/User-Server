@@ -6,4 +6,8 @@ router.get('/', (req, res) => {
     res.json({"Message" : "This is the root router!"});
 });
 
+router.get('/favicon.ico', (req, res) => {
+    res.sendStatus(204);
+});
+
 module.exports = router;
