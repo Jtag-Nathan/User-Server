@@ -9,6 +9,7 @@ router.get('/', (req, res) => {
 
 router.post('/register', userController.create);
 router.post('/authenticate', userController.authenticate);
+//router.get('/all', userController.validateUser, userController.showAll); //Requires user to be logged in aka provide JWT to access this route
 router.get('/all', userController.showAll);
 router.get('/:id', userController.showById);
 router.put('/:id', userController.updateById);
