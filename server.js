@@ -6,6 +6,7 @@ const logger = require('morgan');
 const indexRouter = require('./routes/root');
 const usersRouter = require('./routes/users');
 const mongoose = require('mongoose');
+//mongoose.set('useCreateIndex', true); //Use it here or include it as args in the connect as below either works
 const bodyParser = require('body-parser');
 const db = mongoose.connection;
 const port = 3000;
@@ -14,7 +15,7 @@ const app = express();
 app.set('secretKey', process.env.JWT_KEY);
 
 mongoose.connect(process.env.DATABASE_URL, {
-useNewUrlParser: true
+useNewUrlParser: true, useCreateIndex: true
 });
 
 db.on('error', error => {

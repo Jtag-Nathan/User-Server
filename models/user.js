@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const saltRounds = 10;
+const saltRounds = 12;
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -11,7 +11,8 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         trim: true,
-        required: true
+        required: true,
+        unique: true
     },
     password: {
         type: String,
@@ -31,6 +32,6 @@ userSchema.pre('save', async function save(next) {
         console.log('Something went wrong password was not hashed!');
       return next(err);
     }
-  });
+});
 
 module.exports = mongoose.model('User', userSchema);

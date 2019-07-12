@@ -1,0 +1,10 @@
+services:
+  api:
+    command: nodemon server.js
+    image: node:12-alpine
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/srv/api
+    working_dir: /srv/api
+  version: "3.6"
