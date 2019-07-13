@@ -14,13 +14,13 @@ module.exports = {
             else
                 res.json({
                     status: "success",
-                    message: "User added successfully!",
+                    message: "User account created!",
                     data: null
-                });
+            });
         });
     },
 
-    authenticate: (req, res, next) => { //basically a log in if the user exists then we return the user a jwt for a 1hr session
+    authenticate: (req, res, next) => { //upon providing correct credentials a signed JWT is returned for use on the frontend
         userModel.findOne({
             email: req.body.email
         },
@@ -35,9 +35,9 @@ module.exports = {
                         //res.send(token);
                         res.json({
                             status: "success",
-                            message: "user found!",
+                            message: `Welcome ${userInfo.name}!`, //Alternitively I can just return a message such as "Logged in successfully!" and get the name from the response for the welcome message
                             data: {
-                                user: userInfo,
+                                user: userInfo, //After dev/debugging we probably only want to send our token ! Blackglasses said its okay to return the user info too !
                                 token: token
                             }
                         });
@@ -57,10 +57,19 @@ module.exports = {
           if (err) {
             res.json({status:"error", message: err.message, data:null});
           }else{
-            // add user id to request
-            req.body.userId = decoded.id;
-            next();
-          }
+            userModel.findById(decoded.id, (err, userInfo) => {
+                if (req.params.id !== decoded.id && userInfo.role !== "Admin") {
+                    res.json({
+                        status: "failed",
+                        message: "You cannot modify a user that is not your own!"
+                    });
+                } else {
+                    // add user id to request
+                    //req.body.userId = decoded.id;
+                    next();
+                    }
+                });
+            }
         });     
     },
 

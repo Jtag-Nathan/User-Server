@@ -18,6 +18,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         trim: true,
         required: true
+    },
+    enabled: {
+        type: Boolean,
+        default: true
+    },
+    role: {
+        type: String,
+        default: "User"
     }
 });
 

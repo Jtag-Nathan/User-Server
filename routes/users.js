@@ -9,10 +9,9 @@ router.get('/', (req, res) => {
 
 router.post('/register', userController.create);
 router.post('/authenticate', userController.authenticate);
-//router.get('/all', userController.validateUser, userController.showAll); //Requires user to be logged in aka provide JWT to access this route
 router.get('/all', userController.showAll);
-router.get('/:id', userController.showById);
-router.put('/:id', userController.updateById);
-router.delete('/:id', userController.deleteById);
+router.get('/:id', userController.validateUser, userController.showById); //This route and the two below require users to provide a valid JWT and have the "Admin" role to access any id that is not their own
+router.put('/:id', userController.validateUser, userController.updateById);
+router.delete('/:id', userController.validateUser, userController.deleteById);
 
 module.exports = router;
