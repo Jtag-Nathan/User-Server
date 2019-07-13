@@ -20,7 +20,7 @@ module.exports = {
         });
     },
 
-    authenticate: (req, res, next) => { //upon providing correct credentials a signed JWT is returned for use on the frontend
+    authenticate: (req, res, next) => { //upon providing correct credentials a signed JWT is returned for use on the frontend!
         userModel.findOne({
             email: req.body.email
         },
