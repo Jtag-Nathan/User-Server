@@ -52,25 +52,27 @@ module.exports = {
             });
     },
 
-    validateUser: (req, res, next) => {
-        jwt.verify(req.headers['x-access-token'], req.app.get('secretKey'), (err, decoded) => {
-          if (err) {
-            res.json({status:"error", message: err.message, data:null});
-          }else{
-            userModel.findById(decoded.id, (err, userInfo) => {
-                if (req.params.id !== decoded.id && userInfo.role !== "Admin") {
-                    res.json({
-                        status: "failed",
-                        message: "You cannot modify a user that is not your own!"
-                    });
-                } else {
-                    // add user id to request
-                    //req.body.userId = decoded.id;
-                    next();
-                    }
-                });
+    validateUser: (reqRole) => { 
+        return (req, res, next) => {
+            jwt.verify(req.headers['x-access-token'], req.app.get('secretKey'), (err, decoded) => {
+                if (err) {
+                  res.json({status:"error", message: err.message, data:null});
+                }else{
+                  userModel.findById(decoded.id, (err, userInfo) => {
+                      if (req.params.id !== decoded.id && userInfo.role !== reqRole) {
+                          res.json({
+                              status: "failed",
+                              message: "You cannot modify a user that is not your own!"
+                          });
+                      } else {
+                          // add user id to request
+                          //req.body.userId = decoded.id;
+                          next();
+                          }
+                      });
+                  }
+              }); 
             }
-        });     
     },
 
     showAll: (req, res, next) => {
