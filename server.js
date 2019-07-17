@@ -6,6 +6,7 @@ const logger = require('morgan');
 const indexRouter = require('./routes/root');
 const usersRouter = require('./routes/users');
 const mongoose = require('mongoose');
+const cors = require('cors');
 //mongoose.set('useCreateIndex', true); //Use it here or include it as args in the connect as below either works
 const bodyParser = require('body-parser');
 const db = mongoose.connection;
@@ -26,7 +27,9 @@ db.once('open', () => {
     console.log('Connected to database!');
 });
 
+app.use(cors());
 app.use(logger('dev'));
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

@@ -9,14 +9,15 @@ module.exports = {
             email: req.body.email,
             password: req.body.password
         }, (err, result) => {
-            if (err)
+            if (err) {
                 next(err);
-            else
+            } else {
                 res.json({
                     status: "success",
                     message: "User account created!",
                     data: null
-            });
+                });
+            }
         });
     },
 
@@ -52,32 +53,32 @@ module.exports = {
             });
     },
 
-    validateUser: (reqRole) => { 
+    validateUser: (reqRole) => {
         return (req, res, next) => {
             jwt.verify(req.headers['x-access-token'], req.app.get('secretKey'), (err, decoded) => {
                 if (err) {
-                  res.json({status:"error", message: err.message, data:null});
-                }else{
-                  userModel.findById(decoded.id, (err, userInfo) => {
-                      if (req.params.id !== decoded.id && userInfo.role !== reqRole) {
-                          res.json({
-                              status: "failed",
-                              message: "You cannot modify a user that is not your own!"
-                          });
-                      } else {
-                          // add user id to request
-                          //req.body.userId = decoded.id;
-                          next();
-                          }
-                      });
-                  }
-              }); 
-            }
+                    res.json({ status: "error", message: err.message, data: null });
+                } else {
+                    userModel.findById(decoded.id, (err, userInfo) => {
+                        if (req.params.id !== decoded.id && userInfo.role !== reqRole) {
+                            res.json({
+                                status: "failed",
+                                message: "You cannot modify a user that is not your own!"
+                            });
+                        } else {
+                            // add user id to request
+                            //req.body.userId = decoded.id;
+                            next();
+                        }
+                    });
+                }
+            });
+        }
     },
 
     showAll: (req, res, next) => {
         userModel.find((err, userInfo) => {
-            if(err) next(err);
+            if (err) next(err);
 
             res.json({
                 status: "success",
@@ -89,31 +90,31 @@ module.exports = {
 
     showById: (req, res, next) => {
         userModel.findById(req.params.id, (err, userInfo) => {
-            if(err) next(err);
+            if (err) next(err);
 
             res.json({
                 status: "success",
                 message: "user being retrieved..",
-                data: {user: userInfo}
+                data: { user: userInfo }
             });
         });
     },
     //Update needs some middleware implementing to check if the id actually exist, if it does then update if not then fail and tell us the user doesnt exist
-    updateById: (req, res, next) => {        
-        userModel.findByIdAndUpdate(req.params.id, req.body, {new: true}, (err, userInfo) => {
-            if(err) next(err);
+    updateById: (req, res, next) => {
+        userModel.findByIdAndUpdate(req.params.id, req.body, { new: true }, (err, userInfo) => {
+            if (err) next(err);
 
             res.json({
                 status: "success",
                 message: "user updated..",
-                data: {user: userInfo}
+                data: { user: userInfo }
             });
         });
     },
 
     deleteById: (req, res, next) => {
         userModel.findByIdAndRemove(req.params.id, (err, userInfo) => {
-            if(err) next(err);
+            if (err) next(err);
 
             res.json({
                 status: "success",
