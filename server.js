@@ -3,12 +3,12 @@ if(process.env.NODE_ENV !== 'production') {
 };
 const express = require('express');
 const logger = require('morgan');
+const bodyParser = require('body-parser');
 const indexRouter = require('./routes/root');
 const usersRouter = require('./routes/users');
 const mongoose = require('mongoose');
 const cors = require('cors');
 //mongoose.set('useCreateIndex', true); //Use it here or include it as args in the connect as below either works
-const bodyParser = require('body-parser');
 const db = mongoose.connection;
 const port = 3000;
 var jwt = require('jsonwebtoken');

@@ -37,9 +37,9 @@ module.exports = {
                         res.json({
                             status: "success",
                             message: `Welcome ${userInfo.name}!`, //Alternitively I can just return a message such as "Logged in successfully!" and get the name from the response for the welcome message
+                            token: token,
                             data: {
                                 user: userInfo, //After dev/debugging we probably only want to send our token ! Blackglasses said its okay to return the user info too !
-                                token: token
                             }
                         });
                     } else {
@@ -55,25 +55,46 @@ module.exports = {
 
     validateUser: (reqRole) => {
         return (req, res, next) => {
-            jwt.verify(req.headers['x-access-token'], req.app.get('secretKey'), (err, decoded) => {
+            const token = req.headers['x-access-token'];
+            jwt.verify(token, req.app.get('secretKey'), (err, decoded) => {
                 if (err) {
-                    res.json({ status: "error", message: err.message, data: null });
-                } else {
-                    userModel.findById(decoded.id, (err, userInfo) => {
-                        if (req.params.id !== decoded.id && userInfo.role !== reqRole) {
-                            res.json({
-                                status: "failed",
-                                message: "You cannot modify a user that is not your own!"
-                            });
-                        } else {
-                            // add user id to request
-                            //req.body.userId = decoded.id;
-                            next();
-                        }
+                    res.json({ 
+                        status: "error", 
+                        message: err.message, 
+                        data: null 
                     });
                 }
+                userModel.findById(decoded.id, (err, userInfo) => {
+                    if (req.params.id !== decoded.id && userInfo.role !== reqRole) {
+                        return res.status(401).json({
+                            status: "error",
+                            message: "Unathorized request / Wrong role"
+                        });
+                    }
+                    else {
+                        req.body.userId = decoded.id;
+                        next();
+                    }
+                });
             });
         }
+    },
+
+    validateJWT: (req, res) => {
+        jwt.verify(req.headers['x-access-token'], req.app.get('secretKey'), (err, decoded) => {
+            if (err) {
+                //res.json({ status: "error", message: err.message, data: null });
+                res.status(401).json({ status: "error", message: "jwt is not valid", data: null });
+            } else {
+                // add user id to request
+                req.body.userId = decoded.id;
+                res.json({ status: "success", message: "jwt is valid", data: null});
+                //next(); //Dont need next as we are not doing anything after this we just want to return if the JWT is valid or not
+            }
+            //const myVer = !!decoded; // logs the value as true or false if JWT is valid or not
+            //console.log(myVer);
+            //return myVer;
+        });
     },
 
     showAll: (req, res, next) => {
@@ -99,7 +120,8 @@ module.exports = {
             });
         });
     },
-    //Update needs some middleware implementing to check if the id actually exist, if it does then update if not then fail and tell us the user doesnt exist
+
+    //Update needs to check if the id actually exist, if it does then update if not then fail and tell us the user doesnt exist
     updateById: (req, res, next) => {
         userModel.findByIdAndUpdate(req.params.id, req.body, { new: true }, (err, userInfo) => {
             if (err) next(err);
